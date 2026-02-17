@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoreboard</title>
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 25px;
+            font-weight: 500;
+            color: #000000;
+            margin: 0;
+            padding: 20px;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            height: 90vh;
+            border-collapse: collapse;
+            transform: translate(0%,3%);
+        }
+        th, td {
+            border: 1px solid #000000;
+            padding: 10px;
+            text-align: center;
+            font-weight: bolder;
+            font-size: 1.6em;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .sapphire { color: blue; font-weight: bold; }
+        .ruby { color: red; font-weight: bold; }
+        .emerald { color: green; font-weight: bold; }
+        .topaz { color: rgb(151, 151, 0); font-weight: bold; }
+        
+        .score {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .highlight-row {
+            background-color: rgb(255, 232, 101);
+            transform: scale(1.02); 
+            transition: transform 1s ease-in-out, background-color 1s ease-in-out;
+            z-index: 10;
+            position: relative;
+            margin: 0; 
+            padding: 0;
+            border-collapse: collapse; 
+            border: 1px solid #000000;
+        }
+        .highlight-row th,td{
+            border: 1px solid #000000;
+
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.0.5"></script>
+</head>
+<body>
+
+<table>
+    <thead>
+        <tr>
+            <th>Teams</th>
+            <th>Round 1</th>
+            <th>Round 2</th>
+            <th>Round 3</th>
+            <th>Round 4</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="sapphire">SAPPHIRE</td>
+            <td class="score" data-round="1">10</td>
+            <td class="score" data-round="2">20</td>
+            <td class="score" data-round="3">0</td>
+            <td class="score" data-round="4">10</td>
+            <td class="score" id="total" data-round="5">30</td>
+        </tr>
+        <tr>
+            <td class="ruby">RUBY</td>
+            <td class="score" data-round="1">0</td>
+            <td class="score" data-round="2">0</td>
+            <td class="score" data-round="3">0</td>
+            <td class="score" data-round="4">0</td>
+            <td class="score" id="total" data-round="5">40</td>
+        </tr>
+        <tr>
+            <td class="emerald">EMERALD</td>
+            <td class="score" data-round="1">0</td>
+            <td class="score" data-round="2">0</td>
+            <td class="score" data-round="3">0</td>
+            <td class="score" data-round="4">0</td>
+            <td class="score" id="total" data-round="5">60</td>
+        </tr>
+        <tr>
+            <td class="topaz">TOPAZ</td>
+            <td class="score" data-round="1">0</td>
+            <td class="score" data-round="2">0</td>
+            <td class="score" data-round="3">0</td>
+            <td class="score" data-round="4">0</td>
+            <td class="score" id="total" data-round="5">10</td>
+        </tr>
+    </tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1"></script>
+<script>
+    function hideScores() {
+        const scores = document.querySelectorAll('.score');
+        scores.forEach(score => {
+            score.style.visibility = 'hidden';
+        });
+    }
+
+    function showScores() {
+        const rounds = document.querySelectorAll('th:not(:first-child)');
+        const delay = 2000;
+
+        rounds.forEach((round, index) => {
+            setTimeout(() => {
+                const scores = document.querySelectorAll(`.score[data-round="${index+1}"]`);
+                scores.forEach(score => {
+                    score.style.visibility = 'visible';
+                    score.style.opacity = 0;
+                    score.style.transition = 'opacity 1s';
+                    setTimeout(() => {
+                        score.style.opacity = 1;
+                    }, 100);
+                });
+
+                if (index === rounds.length - 1) {
+                    setTimeout(highlightWinner, 1000);
+                }
+            }, delay * index);
+        });
+    }
+
+    function highlightWinner() {
+        const teams = document.querySelectorAll('tbody tr');
+        let maxScore = -1;
+        let winningTeam = null;
+        let allRound4ScoresAreZero = true;
+
+        teams.forEach(team => {
+            const totalScoreCell = team.querySelector('.score[data-round="5"]');
+            const round4ScoreCell = team.querySelector('.score[data-round="4"]');
+            const totalScore = parseInt(totalScoreCell.textContent, 10);
+            const round4Score = parseInt(round4ScoreCell.textContent, 10);
+            
+            if (round4Score > 0) {
+                allRound4ScoresAreZero = false;
+            }
+            
+            if (totalScore > maxScore) {
+                maxScore = totalScore;
+                winningTeam = team;
+            }
+        });
+
+        // Only highlight and trigger confetti if not all round 4 scores are 0
+        if (winningTeam && !allRound4ScoresAreZero) {
+            winningTeam.classList.add('highlight-row');
+            setTimeout(triggerConfetti, 1000);
+        }
+    }
+
+    function triggerConfetti() {
+        const duration = 5 * 1000; 
+        const end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 3000,
+                origin: { x: 0, y: 1 }
+            });
+
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 3000,
+                origin: { x: 1, y: 1 }
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        })();
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') { 
+            window.location.href = 'credits.html'; 
+        }
+    });
+
+    hideScores();
+    showScores();
+</script>
+
+</body>
+</html>
