@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oshwal Academy Science Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Page transitions */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Landing Page */
+        .landing-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: 
+                linear-gradient(135deg, rgba(10, 25, 47, 0.92) 0%, rgba(15, 32, 60, 0.88) 50%, rgba(20, 40, 75, 0.92) 100%),
+                url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1920&q=80') center/cover no-repeat,
+                url('https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=1920&q=80') center/cover no-repeat;
+            z-index: 2000;
+        }
+
+        .landing-page.active {
+            display: flex;
+        }
+
+        .landing-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 150, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(100, 200, 255, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .landing-content {
+            position: relative;
+            z-index: 1;
+            padding: 40px;
+        }
+
+        .science-icon {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .science-icon svg {
+            width: 60px;
+            height: 60px;
+            fill: #00d2ff;
+            opacity: 0.8;
+        }
+
+        .landing-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 4px 30px rgba(0, 210, 255, 0.4);
+        }
+
+        .landing-title span {
+            display: block;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #00d2ff;
+            margin-top: 10px;
+            letter-spacing: 4px;
+        }
+
+        .landing-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 50px;
+            max-width: 600px;
+        }
+
+        .start-btn {
+            padding: 20px 60px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 210, 255, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 50px rgba(0, 210, 255, 0.5);
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-elements span {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.15;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .floating-elements span:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-elements span:nth-child(2) { top: 20%; right: 15%; animation-delay: 2s; }
+        .floating-elements span:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 4s; }
+        .floating-elements span:nth-child(4) { bottom: 15%; right: 10%; animation-delay: 6s; }
+        .floating-elements span:nth-child(5) { top: 50%; left: 5%; animation-delay: 8s; }
+        .floating-elements span:nth-child(6) { top: 40%; right: 5%; animation-delay: 10s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* Participants Page */
+        .participants-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(10, 25, 47, 0.95) 0%, rgba(15, 32, 60, 0.92) 100%);
+            z-index: 1999;
+            overflow-y: auto;
+        }
+
+        .participants-page.active {
+            display: flex;
+        }
+
+        .participants-content {
+            padding: 40px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .participants-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .participant-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .participant-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 210, 255, 0.2);
+            border-color: #00d2ff;
+        }
+
+        .participant-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #00d2ff;
+            text-align: left;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        .participant-role {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+        }
+
+        .participants-nav {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .participants-nav-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .participants-nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .participants-nav-btn.active {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+        }
+
+        /* Home Page */
+        .home-title {
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+        }
+
+        .home-subtitle {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #a0a0a0;
+            margin-bottom: 60px;
+        }
+
+        .round-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .round-btn {
+            padding: 40px 30px;
+            font-size: 1.7rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .round-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .round-btn:hover::before {
+            left: 100%;
+        }
+
+        .round-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .round-btn-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .round-btn-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .round-btn-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .round-btn-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+
+        .round-btn-subtitle {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        /* Round Pages */
+        .round-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .round-title {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        .rules-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid #00d2ff;
+        }
+
+        .rules-box h3 {
+            color: #00d2ff;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .rules-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .rules-box li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            font-size: 1.2rem;
+        }
+
+        .rules-box li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #43e97b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Number Grid (Round 1 & 4) */
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            max-width: 700px;
+            margin: 30px auto;
+        }
+
+        .number-btn {
+            aspect-ratio: 1;
+            font-size: 1.8rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .number-btn:hover:not(.used) {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .number-btn.used {
+            background: #666;
+            color: #999;
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .number-btn.used:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 102, 102, 0.3);
+        }
+
+        .number-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: scale(0.9);
+            opacity: 0.5;
+        }
+
+        /* Question Display */
+        .question-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .question-modal.active {
+            display: flex;
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+        }
+
+        .question-number {
+            font-size: 1.4rem;
+            color: #00d2ff;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .question-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: none;
+            object-fit: contain;
+            border: 2px solid rgba(0, 210, 255, 0.3);
+        }
+
+        .question-image.visible {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .options-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .options-list li {
+            background: rgba(255,255,255,0.05);
+            padding: 15px 25px;
+            margin: 10px 0;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 1.3rem;
+        }
+
+        /* Timer */
+        .timer {
+            font-size: 4.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+
+        .timer.warning {
+            color: #f5576c;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .timer-large {
+            font-size: 6rem;
+            color: #00d2ff;
+        }
+
+        /* Answer Box */
+        .answer-box {
+            background: rgba(67, 233, 123, 0.2);
+            border: 2px solid #43e97b;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .answer-box.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .answer-label {
+            color: #43e97b;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .answer-text {
+            font-size: 1.7rem;
+            font-weight: 600;
+        }
+
+        /* Video Round */
+        .video-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .video-btn {
+            aspect-ratio: 16/9;
+            font-size: 1.4rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .video-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .video-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .video-btn svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .video-player-area {
+            background: #000;
+            border-radius: 15px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-player-area video {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+        }
+
+        .video-placeholder {
+            color: #666;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .video-questions {
+            display: none;
+        }
+
+        .video-questions.active {
+            display: block;
+        }
+
+        .video-question-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+        }
+
+        .video-question-item h4 {
+            color: #f093fb;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        /* Problem Solving Round */
+        .problems-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .problem-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 4px solid #4facfe;
+        }
+
+        .problem-item h3 {
+            color: #4facfe;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .problem-item p {
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        .big-timer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .big-timer.small {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+        }
+
+        .big-timer.small .big-timer-label {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .big-timer.small .timer {
+            font-size: 2rem !important;
+            line-height: 1;
+        }
+
+        /* Small toggle button for Round 3 */
+        .small-toggle {
+            padding: 8px 14px;
+            font-size: 1rem;
+            border-radius: 10px;
+        }
+
+        .big-timer-label {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-bottom: 10px;
+        }
+
+        /* Back button styling */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .back-btn .btn {
+            padding: 10px 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Round 4 Set Title */
+        .round4-set-title {
+            font-size: 2.2rem;
+            color: #00d2ff;
+            text-align: center;
+            margin: 30px 0 20px 0;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { font-size: 16px; }
+            .home-title { font-size: 2.5rem; }
+            .round-buttons { grid-template-columns: 1fr; }
+            .number-grid { grid-template-columns: repeat(4, 1fr); }
+            .video-grid { grid-template-columns: repeat(2, 1fr); }
+            .question-text { font-size: 1.4rem; }
+            .timer { font-size: 3rem; }
+            .timer-large { font-size: 4rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- LANDING PAGE -->
+    <div id="landing-page" class="landing-page active">
+        <div class="floating-elements">
+            <span>&#x2697;</span>
+            <span>&#x269B;</span>
+            <span>&#x2695;</span>
+            <span>&#x1F52C;</span>
+            <span>&#x1F9EA;</span>
+            <span>&#x1F4A1;</span>
+        </div>
+        <div class="landing-content">
+            <div class="science-icon">
+                <svg viewBox="0 0 24 24"><path d="M7 2v2h1v14a4 4 0 0 0 4 4 4 4 0 0 0 4-4V4h1V2H7zm3 2h4v4.17L12 9.59l-2-1.42V4zm4 6.41V18a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-7.59l2 1.42 2-1.42z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg>
+            </div>
+            <h1 class="landing-title">
+                Oshwal Academy Senior High
+                <span>Annual Science Quiz</span>
+            </h1>
+            <p class="landing-subtitle">Welcome to the Science Quiz Competition</p>
+            <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+        </div>
+    </div>
+
+    <!-- PARTICIPANTS PAGE -->
+    <div id="participants-page" class="participants-page">
+        <div class="participants-content">
+            <h1 class="participants-title">Welcome!</h1>
+            
+            <div class="participants-nav">
+                <button class="participants-nav-btn active" onclick="showParticipantsTab('participants')">👥 Participants</button>
+                <button class="participants-nav-btn" onclick="showParticipantsTab('volunteers')">👔 Volunteers</button>
+                <button class="participants-nav-btn" onclick="proceedToHome()">Continue →</button>
+            </div>
+            
+            <div id="participants-tab" class="participants-grid">
+                <!-- Participants will be loaded here -->
+            </div>
+            
+            <div id="volunteers-tab" class="participants-grid" style="display: none;">
+                <!-- Volunteers will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- HOME PAGE (Rounds Selection) -->
+        <div id="home-page" class="page">
+            <h1 class="home-title">Quiz Rounds</h1>
+            <p class="home-subtitle">Select a round to begin</p>
+            
+            <div class="round-buttons">
+                <button class="round-btn round-btn-1" onclick="showRound(1)">
+                    Round 1
+                    <span class="round-btn-subtitle">Try Your Luck</span>
+                </button>
+                <button class="round-btn round-btn-2" onclick="showRound(2)">
+                    Round 2
+                    <span class="round-btn-subtitle">Fastest Finger</span>
+                </button>
+                <button class="round-btn round-btn-3" onclick="showRound(3)">
+                    Round 3
+                    <span class="round-btn-subtitle">Problem Solving</span>
+                </button>
+                <button class="round-btn round-btn-4" onclick="showRound(4)">
+                    Round 4
+                    <span class="round-btn-subtitle">Rapid Fire</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ROUND 1 PAGE -->
+        <div id="round1-page" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="goHome()">← Home</button>
+            </div>
+            
+            <div class="round-header">
+                <h2 class="round-title">🎲 Round 1 - Try Your Luck</h2>
+            </div>
+            
+            <div class="rules-box">
+                <h3>📋 Rules</h3>
+                <ul>
+                    <li>Choose any number from 1 to 24</li>
+                    <li>Each number reveals a unique question, choose your answer from the options given.</li>
+                    <li>You have 10 seconds to answer each question</li>
+                    <li>Once a number is chosen, it cannot be selected again</li>
+                    <li>Each team to choose 1 question at a time upto 5 questions</li>
+                    <li>Each correct answer earns 5 points</li>
+                    <li>Questions will not be passed upon faliure</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showRound1Questions()">Start Questions</button>
+            </div>
+        </div>
+
+        <!-- ROUND 1 QUESTIONS -->
+        <div id="round1-questions" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="showRound(1)">← Back to Round 1</button>
+            </div>
+            
+            <div class="round-header">
+                <h2 class="round-title">🎲 Choose Your Number</h2>
+            </div>
+            
+            <div class="number-grid" id="round1-grid"></div>
+        </div>
+
+        <!-- ROUND 2 PAGE -->
+        <div id="round2-page" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="goHome()">← Home</button>
+            </div>
+            
+            <div class="round-header">
+                <h2 class="round-title">🎬 Round 2 - Fastest Finger</h2>
+            </div>
+            
+            <div class="rules-box">
+                <h3>📋 Rules</h3>
+                <ul>
+                    <li>Watch each video carefully</li>
+                    <li>After each video, 3 questions will appear</li>
+                    <li>Each question has a 10-second timer</li>
+                    <li>First team to press the buzzer will answer the question</li>
+                    <li>Each correct answer earns 10 points</li>
+                    <li>Each incorrect answer will cause 5 points to be deducted</li>
+                    <li>There will be 6 videos.</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showRound2Videos()">Start Video Round</button>
+            </div>
+        </div>
+
+        <!-- ROUND 2 VIDEOS -->
+        <div id="round2-videos" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="showRound(2)">← Back to Round 2</button>
+            </div>
+            
+            <div class="round-header">
+                <h2 class="round-title">🎬 Select a Video</h2>
+            </div>
+            
+            <div class="video-container">
+                <div class="video-grid" id="video-grid"></div>
+            </div>
+        </div>
+
+        <!-- ROUND 2 VIDEO PLAYER -->
+        <div id="round2-player" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="showRound2Videos()">← Back to Videos</button>
+            </div>
+            
+            <div class="video-container">
+                <div class="video-player-area">
+                    <video id="video-player" controls>
+                        <source src="" type="video/mp4">
+                    </video>
+                </div>
+                
+                <div class="action-buttons" id="video-controls">
+                    <button class="btn btn-primary" onclick="showVideoQuestions()">Show Questions</button>
+                </div>
+                
+                <div class="video-questions" id="video-questions-area"></div>
+            </div>
+        </div>
+
+        <!-- ROUND 3 PAGE -->
+        <div id="round3-page" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="goHome()">← Home</button>
+            </div>
+            
+            <div class="round-header">
+                <h2 class="round-title">🧮 Round 3 - Problem Solving</h2>
+            </div>
+            
+            <div class="rules-box">
+                <h3>📋 Rules</h3>
+                <ul>
+                    <li>3 calculation-based problems will be displayed</li>
+                    <li>You have 10 minutes to solve all problems</li>
+                    <li>All questions remain visible throughout</li>
+                    <li>10 points will be awarded for each correct answer</li>
+                    <li>No points will be deducted for incorrect answers</li>
+                    <li>Calculators can be used during this question</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showRound3Problems()">Start Problem Solving</button>
+            </div>
+        </div>
+
+        <!-- ROUND 3 PROBLEMS -->
+        <div id="round3-problems" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="stopRound3Timer(); showRound(3)">← Back to Round 3</button>
+            </div>
+            
+            <div class="problems-container">
+                <div class="big-timer">
+                    <div class="big-timer-label">Time Remaining</div>
+                    <div class="timer timer-large" id="round3-timer">10:00</div>
+                </div>
+                
+                <button class="btn btn-secondary small-toggle" onclick="toggleRound3View()" style="margin-bottom: 20px;">Toggle Video/Questions</button>
+                
+                <div id="round3-video" style="display: none; margin-bottom: 20px;">
+                    <video width="100%" height="auto" controls style="max-width: 1200px;">
+                        <source src="./Videos/Round 3.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div id="problems-list"></div>
+                
+                <div class="action-buttons" style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="showAllRound3Answers()">Show All Answers</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROUND 4 PAGE -->
+        <div id="round4-page" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="goHome()">← Home</button>
+            </div>
+            
+            <div class="round-header">
+                <h2 class="round-title">⭐ Round 4 - Bonus Questions</h2>
+            </div>
+            
+            <div class="rules-box">
+                <h3>📋 Rules</h3>
+                <ul>
+                    <li>This round has 2 sections; one for year 12 and one for year 13</li>
+                    <li>12 questions will be asked to representatives from year 12 and year 13 respectively from each house</li>
+                    <li>Participants answering the question have to step forward</li>
+                    <li>5 points will be awarded for every correct answer</li>
+                    <li>Participants are required to answer as many questions as possible within 90 seconds.</li>
+                    <li>Participants are allowed to pass and proceed to the next question</li>
+                    <li>If atleast 6 out of 12 questions are answered correctly, the team can opt to answer a bonus question worth 20 points, if answered incorrectly 10 points will be deducted</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showRound4Questions()">Start Bonus Round</button>
+                <button class="btn btn-primary" onclick="showRound4Timer()">90s Timer</button>
+            </div>
+        </div>
+
+        <!-- ROUND 4 QUESTIONS -->
+        <div id="round4-questions" class="page">
+            <div class="back-btn">
+                <button class="btn btn-secondary" onclick="showRound(4)">← Back to Round 4</button>
+            </div>
+            
+            <div class="round-header">
+                <h2 class="round-title">⭐ Choose Your Bonus Question</h2>
+            </div>
+
+            <h3 class="round4-set-title">Year 12</h3>
+            <div class="number-grid" id="round4-grid-set1" style="grid-template-columns: repeat(3, 1fr); max-width: 400px; margin: 0 auto 40px;"></div>
+
+            <h3 class="round4-set-title">Set 2 - Year 13</h3>
+            <div class="number-grid" id="round4-grid-set2" style="grid-template-columns: repeat(3, 1fr); max-width: 400px; margin: 0 auto;"></div>
+        </div>
+    </div>
+
+    <!-- ROUND 4 TIMER PAGE -->
+    <div id="round4-timer" class="page">
+        <div class="back-btn">
+            <button class="btn btn-secondary" onclick="stopRound4Timer(); showRound(4)">← Back to Rules</button>
+        </div>
+
+        <div class="round-header">
+            <h2 class="round-title">⏱️ Round 4 — 90 Second Timer</h2>
+        </div>
+
+        <div style="max-width:700px;margin:0 auto;text-align:center;">
+            <div class="big-timer" style="margin-top:20px;">
+                <div class="big-timer-label">Time Remaining</div>
+                <div class="timer timer-large" id="round4-timer-display">1:30</div>
+            </div>
+
+            <div class="action-buttons" style="margin-top:20px;">
+                <button id="round4-start-btn" class="btn btn-primary" onclick="toggleRound4Timer()">Start</button>
+                <button class="btn btn-secondary" onclick="resetRound4Timer()">Reset</button>
+                <button class="btn btn-secondary" onclick="stopRound4Timer(); showRound(4)">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUESTION MODAL -->
+    <div id="question-modal" class="question-modal">
+        <div class="question-box">
+            <div class="question-number" id="modal-question-number">Question 1</div>
+            <div class="timer" id="modal-timer">10</div>
+            <img id="modal-question-image" class="question-image" src="" alt="Question Image">
+            <div class="question-text" id="modal-question-text">Sample question text here?</div>
+            <ul class="options-list" id="modal-options"></ul>
+            
+            <div class="answer-box" id="modal-answer-box">
+                <div class="answer-label">ANSWER</div>
+                <div class="answer-text" id="modal-answer-text">Answer here</div>
+            </div>
+            
+            <div class="action-buttons" style="margin-top: 20px;">
+                <button class="btn btn-primary" onclick="revealAnswer()">Show Answer</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA ====================
+        const participants = [
+            { house: "Ruby", members: ["Joseph Nyamu Kenga", "Diya Deepak Patel", "Poojashree Madhan", "Matthew Ndungu Wagema"] },
+            { house: "Sapphire", members: ["Nikhil Eadara", "Rucha Sandeep Patankar", "Aleksandr Thomasovich Ongoro", "Diptanshu Sandeep Savant"] },
+            { house: "Emerald", members: ["Vishwam Periasamy Subramanian", "Kaavya Saraswati Subramanian", "Austin Ngechu Irungu", "Azaan Adal"] },
+            { house: "Topaz", members: ["Sanvi Hardik Shah", "Khushi Mitulkumar Karia", "Ronak Punit Agarwal","Wesly Gathuya Wathuta"] },
+        ];
+
+        const volunteers = [
+            { name: "Vrajesh Prakash Modashiya", role: "Volunteer" },
+            { name: "Tej Jigarkumar Bhavsar", role: "Volunteer" },
+            { name: "Paraag Sahoo", role: "Quiz Master" },
+            { name: "Prisha Sinha", role: "Quiz Master" },
+            { name: "Krishay Dharmesh Sanghani", role: "Timekeeper" },
+            { name: "Harsh Haren Somaiya", role: "Timekeeper" },
+            { name: "Jiana Anish Mehta", role: "Judge" },
+            { name: "Ganeev Singh Gahir", role: "Judge" },
+        ];
+
+        const round1Questions = [
+            { q: "The astronomical telescope that captured the first images of a blackhole in the year 2019 is", options: ["A) The James Webb Telescope", "B) The Hubble Space Telescope", "C) The Event Horizon Telescope", "D) The Subaru Telescope"], answer: "C) The Event Horizon Telescope" },
+            { q: "The prominent Physicist who discovered electromagnetic induction and formulated field theory is", options: ["A) Albert Einstein", "B) Micheal Faraday", "C) Issac Newton", "D) JJ Thompson"], answer: "B) Micheal Faraday" },
+            { q: "Which vitamin complex includes thiamine, niacin, and riboflavin? ", options: ["A) Vitamin B", "B) Vitamin K", "C) Vitamin C", "D) Vitamin E"], answer: "D) Vitamin E" },
+            { q: "Name the branch of medical science which is concerned with the study of disease as it affects a community of people rather than a single individual.", options: ["A) Anthropology", "B) Epidemiology", "C) Oncology", "D) Pathogenesis"], answer: "B) Epidemiology" },
+            { q: "What is the largest ocean on Earth?", options: ["A) Atlantic", "B) Indian", "C) Arctic", "D) Pacific"], answer: "D) Pacific" },
+            { q: "What is the chemical symbol for Gold?", options: ["A) Go", "B) Gd", "C) Au", "D) Ag"], answer: "C) Au" },
+            { q: "How many continents are there?", options: ["A) 5", "B) 6", "C) 7", "D) 8"], answer: "C) 7" },
+            { q: "What year did World War II end?", options: ["A) 1943", "B) 1944", "C) 1945", "D) 1946"], answer: "C) 1945" },
+            { q: "What is the square root of 144?", options: ["A) 10", "B) 11", "C) 12", "D) 14"], answer: "C) 12" },
+            { q: "Which gas do plants absorb from the atmosphere?", options: ["A) Oxygen", "B) Nitrogen", "C) Carbon Dioxide", "D) Hydrogen"], answer: "C) Carbon Dioxide" },
+            { q: "What is the hardest natural substance?", options: ["A) Gold", "B) Iron", "C) Diamond", "D) Platinum"], answer: "C) Diamond" },
+            { q: "Who painted the Mona Lisa?", options: ["A) Van Gogh", "B) Picasso", "C) Da Vinci", "D) Michelangelo"], answer: "C) Da Vinci" },
+            { q: "What is the largest mammal?", options: ["A) Elephant", "B) Blue Whale", "C) Giraffe", "D) Hippo"], answer: "B) Blue Whale" },
+            { q: "How many sides does a hexagon have?", options: ["A) 5", "B) 6", "C) 7", "D) 8"], answer: "B) 6" },
+            { q: "What is the speed of light (approx)?", options: ["A) 300,000 km/s", "B) 150,000 km/s", "C) 500,000 km/s", "D) 100,000 km/s"], answer: "A) 300,000 km/s" },
+            { q: "Which country has the largest population?", options: ["A) USA", "B) India", "C) China", "D) Russia"], answer: "B) India" },
+            { q: "What is H2O commonly known as?", options: ["A) Salt", "B) Water", "C) Oxygen", "D) Hydrogen"], answer: "B) Water" },
+            { q: "Who discovered gravity?", options: ["A) Einstein", "B) Newton", "C) Galileo", "D) Darwin"], answer: "B) Newton" },
+            { q: "What is the smallest prime number?", options: ["A) 0", "B) 1", "C) 2", "D) 3"], answer: "C) 2" },
+            { q: "Which instrument has 88 keys?", options: ["A) Guitar", "B) Violin", "C) Piano", "D) Flute"], answer: "C) Piano" },
+            { q: "What is the currency of Japan?", options: ["A) Yuan", "B) Won", "C) Yen", "D) Ringgit"], answer: "C) Yen" },
+            { q: "How many degrees in a circle?", options: ["A) 180", "B) 270", "C) 360", "D) 400"], answer: "C) 360" },
+            { q: "What is the longest river in the world?", options: ["A) Amazon", "B) Nile", "C) Yangtze", "D) Mississippi"], answer: "B) Nile" },
+            { q: "Which element has atomic number 1?", options: ["A) Helium", "B) Oxygen", "C) Hydrogen", "D) Carbon"], answer: "C) Hydrogen" }
+        ];
+
+        const round2Videos = [
+            {
+                title: "Video 1",
+                src: "./Videos/Round 2/Q1.mp4",
+                questions: [
+                    { q: "What was shown first in the video?", answer: "Sample answer 1" },
+                    { q: "How many objects were displayed?", answer: "Sample answer 2" },
+                    { q: "What color was the main item?", answer: "Sample answer 3" }
+                ]
+            },
+            {
+                title: "Video 2",
+                src: "./Videos/Round 2/Q2.mp4",
+                questions: [
+                    { q: "Video 2 Question 1?", answer: "Answer 1" },
+                    { q: "Video 2 Question 2?", answer: "Answer 2" },
+                    { q: "Video 2 Question 3?", answer: "Answer 3" }
+                ]
+            },
+            {
+                title: "Video 3",
+                src: "./Videos/Round 2/Q3.mp4",
+                questions: [
+                    { q: "Video 3 Question 1?", answer: "Answer 1" },
+                    { q: "Video 3 Question 2?", answer: "Answer 2" },
+                    { q: "Video 3 Question 3?", answer: "Answer 3" }
+                ]
+            },
+            {
+                title: "Video 4",
+                src: "./Videos/Round 2/Q4.mp4",
+                questions: [
+                    { q: "Video 4 Question 1?", answer: "Answer 1" },
+                    { q: "Video 4 Question 2?", answer: "Answer 2" },
+                    { q: "Video 4 Question 3?", answer: "Answer 3" }
+                ]
+            },
+            {
+                title: "Video 5",
+                src: "./Videos/Round 2/Q5.mp4",
+                questions: [
+                    { q: "Video 5 Question 1?", answer: "Answer 1" },
+                    { q: "Video 5 Question 2?", answer: "Answer 2" },
+                    { q: "Video 5 Question 3?", answer: "Answer 3" }
+                ]
+            },
+            {
+                title: "Video 6",
+                src: "./Videos/Round 2/Q6.mov",
+                questions: [
+                    { q: "Video 6 Question 1?", answer: "Answer 1" },
+                    { q: "Video 6 Question 2?", answer: "Answer 2" },
+                    { q: "Video 6 Question 3?", answer: "Answer 3" }
+                ]
+            }
+        ];
+
+        const round3Problems = [
+            {
+                title: "Problem 1 - Arithmetic",
+                problem: "A train travels at 60 km/h for 2.5 hours, then at 80 km/h for 1.5 hours. What is the total distance traveled?",
+                answer: "Total distance = (60 × 2.5) + (80 × 1.5) = 150 + 120 = 270 km"
+            },
+            {
+                title: "Problem 2 - Algebra",
+                problem: "If 3x + 7 = 22, find the value of 5x - 3.",
+                answer: "3x + 7 = 22 → 3x = 15 → x = 5. Therefore, 5x - 3 = 5(5) - 3 = 25 - 3 = 22"
+            },
+            {
+                title: "Problem 3 - Percentage",
+                problem: "A shirt originally costs $80. It's first discounted by 25%, then an additional 10% off. What is the final price?",
+                answer: "After 25% off: $80 × 0.75 = $60. After additional 10% off: $60 × 0.90 = $54"
+            }
+        ];
+
+        // Round 4 Questions - Two Sets of 6 Questions
+        const round4QuestionsSet1 = [
+            { q: "What is the value of Pi to 2 decimal places?", answer: "3.14" },
+            { q: "Name the process by which plants make food.", answer: "Photosynthesis" },
+            { q: "What is the capital of Australia?", answer: "Canberra" },
+            { q: "Who invented the telephone?", answer: "Alexander Graham Bell" },
+            { q: "What is the formula for the area of a circle?", answer: "πr² (Pi × radius squared)" },
+            { q: "In which year did humans first land on the Moon?", answer: "1969" }
+        ];
+
+        const round4QuestionsSet2 = [
+            { q: "What is the chemical symbol for Silver?", answer: "Ag" },
+            { q: "How many bones are in the human body?", answer: "206" },
+            { q: "What is the smallest country in the world?", answer: "Vatican City" },
+            { q: "Who wrote 'Hamlet'?", answer: "William Shakespeare" },
+            { q: "What is the speed of sound at sea level?", answer: "343 m/s or 1235 km/h" },
+            { q: "How many sides does an octagon have?", answer: "8" }
+        ];
+
+        // ==================== STATE ====================
+        let round1Used = new Set();
+        let round2Used = new Set();
+        let round4UsedSet1 = new Set();
+        let round4UsedSet2 = new Set();
+        let currentTimer = null;
+        let round3Timer = null;
+        let currentVideoIndex = -1;
+        let currentRound4Set = null;
+
+        // ==================== NAVIGATION ====================
+        function startQuiz() {
+            document.getElementById('landing-page').classList.remove('active');
+            showParticipantsPage();
+        }
+
+        function showParticipantsPage() {
+            document.getElementById('participants-page').classList.add('active');
+            loadParticipants();
+        }
+
+        function showParticipantsTab(tab) {
+            document.querySelectorAll('.participants-nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('participants-tab').style.display = 'none';
+            document.getElementById('volunteers-tab').style.display = 'none';
+            
+            if (tab === 'participants') {
+                document.querySelector('.participants-nav-btn:nth-child(1)').classList.add('active');
+                document.getElementById('participants-tab').style.display = 'grid';
+            } else {
+                document.querySelector('.participants-nav-btn:nth-child(2)').classList.add('active');
+                document.getElementById('volunteers-tab').style.display = 'grid';
+            }
+        }
+
+        function loadParticipants() {
+            const participantsGrid = document.getElementById('participants-tab');
+            participantsGrid.innerHTML = participants.map(p => `
+                <div class="participant-card">
+                    <div class="participant-role">House: ${p.house}</div>
+                    ${p.members.map((member, index) => `<div class="participant-name">${index + 1}. ${member}</div>`).join('')}
+                </div>
+            `).join('');
+
+            const volunteersGrid = document.getElementById('volunteers-tab');
+            volunteersGrid.innerHTML = volunteers.map(v => `
+                <div class="participant-card">
+                    <div class="participant-name">${v.name}</div>
+                    <div class="participant-role">${v.role}</div>
+                </div>
+            `).join('');
+
+            showParticipantsTab('participants');
+        }
+
+        function proceedToHome() {
+            document.getElementById('participants-page').classList.remove('active');
+            showPage('home-page');
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function goHome() {
+            stopAllTimers();
+            showPage('home-page');
+        }
+
+        function goToLanding() {
+            stopAllTimers();
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('landing-page').classList.add('active');
+        }
+
+        function showRound(roundNum) {
+            stopAllTimers();
+            showPage(`round${roundNum}-page`);
+        }
+
+        // ==================== ROUND 1 ====================
+        function showRound1Questions() {
+            showPage('round1-questions');
+            renderRound1Grid();
+        }
+
+        function renderRound1Grid() {
+            const grid = document.getElementById('round1-grid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= 24; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn';
+                if (round1Used.has(i)) {
+                    btn.classList.add('used');
+                }
+                btn.textContent = i;
+                btn.onclick = () => selectRound1Question(i);
+                grid.appendChild(btn);
+            }
+        }
+
+        function selectRound1Question(num) {
+            round1Used.add(num);
+            renderRound1Grid();
+            const question = round1Questions[num - 1];
+            openQuestionModal(num, question.q, question.options, question.answer, 10, question.image);
+        }
+
+        // ==================== ROUND 2 ====================
+        function showRound2Videos() {
+            showPage('round2-videos');
+            renderVideoGrid();
+        }
+
+        function renderVideoGrid() {
+            const grid = document.getElementById('video-grid');
+            grid.innerHTML = '';
+            round2Videos.forEach((video, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'video-btn';
+                btn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    ${video.title}
+                `;
+                btn.onclick = () => playVideo(index);
+                grid.appendChild(btn);
+            });
+        }
+
+        function playVideo(index) {
+            currentVideoIndex = index;
+            round2Used.add(index);
+            showPage('round2-player');
+            
+            const video = round2Videos[index];
+            const player = document.getElementById('video-player');
+            player.src = video.src;
+            
+            document.getElementById('video-controls').style.display = 'flex';
+            document.getElementById('video-questions-area').classList.remove('active');
+            document.getElementById('video-questions-area').innerHTML = '';
+        }
+
+        function showVideoQuestions() {
+            if (currentVideoIndex < 0) return;
+            
+            const video = round2Videos[currentVideoIndex];
+            const area = document.getElementById('video-questions-area');
+            document.getElementById('video-controls').style.display = 'none';
+            
+            let html = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #f093fb; margin-bottom: 20px;">Select a Question</h3>
+                    <div class="action-buttons" id="video-question-buttons">
+            `;
+            
+            video.questions.forEach((q, i) => {
+                html += `<button class="btn btn-primary video-q-btn" id="video-q-btn-${i}" onclick="showVideoQuestion(${i})">Question ${i + 1}</button>`;
+            });
+            
+            html += `
+                    </div>
+                </div>
+                <div id="video-question-display" style="display: none;">
+                    <div class="video-question-item">
+                        <h4 id="video-q-title">Question 1</h4>
+                        <p id="video-q-text"></p>
+                        <div class="timer" id="video-timer">10</div>
+                        <div class="answer-box" id="video-answer">
+                            <div class="answer-label">ANSWER</div>
+                            <div class="answer-text" id="video-answer-text"></div>
+                        </div>
+                        <div class="action-buttons" style="margin-top: 15px;">
+                            <button class="btn btn-primary" onclick="startCurrentVideoTimer()">Start Timer</button>
+                            <button class="btn btn-secondary" onclick="revealCurrentVideoAnswer()">Show Answer</button>
+                            <button class="btn btn-secondary" onclick="closeVideoQuestion()">Close Question</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            area.innerHTML = html;
+            area.classList.add('active');
+        }
+        
+        let currentVideoQuestionIndex = -1;
+        
+        function showVideoQuestion(index) {
+            if (currentVideoIndex < 0) return;
+            
+            const video = round2Videos[currentVideoIndex];
+            const question = video.questions[index];
+            currentVideoQuestionIndex = index;
+            
+            document.getElementById('video-question-display').style.display = 'block';
+            document.getElementById('video-q-title').textContent = `Question ${index + 1}`;
+            document.getElementById('video-q-text').textContent = question.q;
+            document.getElementById('video-answer-text').textContent = question.answer;
+            document.getElementById('video-answer').classList.remove('visible');
+            
+            const timerEl = document.getElementById('video-timer');
+            timerEl.textContent = '10';
+            timerEl.classList.remove('warning');
+            stopAllTimers();
+        }
+        
+        function startCurrentVideoTimer() {
+            stopAllTimers();
+            let time = 10;
+            const timerEl = document.getElementById('video-timer');
+            timerEl.textContent = time;
+            timerEl.classList.remove('warning');
+            
+            currentTimer = setInterval(() => {
+                time--;
+                timerEl.textContent = time;
+                if (time <= 3) timerEl.classList.add('warning');
+                if (time <= 0) {
+                    clearInterval(currentTimer);
+                    timerEl.textContent = "Time's up!";
+                }
+            }, 1000);
+        }
+        
+        function revealCurrentVideoAnswer() {
+            document.getElementById('video-answer').classList.add('visible');
+        }
+        
+        function closeVideoQuestion() {
+            stopAllTimers();
+            document.getElementById('video-question-display').style.display = 'none';
+            currentVideoQuestionIndex = -1;
+        }
+
+        // ==================== ROUND 3 ====================
+        function showRound3Problems() {
+            showPage('round3-problems');
+            renderProblems();
+            startRound3Timer();
+        }
+
+        function renderProblems() {
+            const list = document.getElementById('problems-list');
+            list.innerHTML = '';
+            round3Problems.forEach((p, i) => {
+                list.innerHTML += `
+                    <div class="problem-item">
+                        <h3>${p.title}</h3>
+                        <p>${p.problem}</p>
+                        <div class="answer-box" id="problem-answer-${i}">
+                            <div class="answer-label">SOLUTION</div>
+                            <div class="answer-text">${p.answer}</div>
+                        </div>
+                        <button class="btn btn-secondary" style="margin-top: 15px;" onclick="document.getElementById('problem-answer-${i}').classList.add('visible')">
+                            Show Solution
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function startRound3Timer() {
+            let time = 600;
+            const timerEl = document.getElementById('round3-timer');
+            
+            round3Timer = setInterval(() => {
+                time--;
+                const minutes = Math.floor(time / 60);
+                const seconds = time % 60;
+                timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (time <= 60) timerEl.classList.add('warning');
+                if (time <= 0) {
+                    clearInterval(round3Timer);
+                    timerEl.textContent = "Time's up!";
+                }
+            }, 1000);
+        }
+
+        function stopRound3Timer() {
+            if (round3Timer) {
+                clearInterval(round3Timer);
+                round3Timer = null;
+            }
+        }
+
+        // ==================== ROUND 4 TIMER (90s) ====================
+        let round4Timer = null;
+        let round4Time = 90;
+
+        function showRound4Timer() {
+            stopAllTimers();
+            showPage('round4-timer');
+            updateRound4Display();
+            const btn = document.getElementById('round4-start-btn');
+            if (btn) btn.textContent = round4Timer ? 'Stop' : 'Start';
+        }
+
+        function updateRound4Display() {
+            const el = document.getElementById('round4-timer-display');
+            if (!el) return;
+            if (round4Time <= 0) {
+                el.textContent = "Time's up!";
+                el.classList.add('warning');
+                return;
+            }
+            const minutes = Math.floor(round4Time / 60);
+            const seconds = round4Time % 60;
+            el.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            if (round4Time <= 3) el.classList.add('warning'); else el.classList.remove('warning');
+        }
+
+        function toggleRound4Timer() {
+            const btn = document.getElementById('round4-start-btn');
+            if (round4Timer) {
+                clearInterval(round4Timer);
+                round4Timer = null;
+                if (btn) btn.textContent = 'Start';
+                return;
+            }
+
+            if (round4Time <= 0) round4Time = 90;
+            if (btn) btn.textContent = 'Stop';
+            round4Timer = setInterval(() => {
+                round4Time--;
+                updateRound4Display();
+                if (round4Time <= 0) {
+                    clearInterval(round4Timer);
+                    round4Timer = null;
+                    if (btn) btn.textContent = 'Start';
+                }
+            }, 1000);
+        }
+
+        function resetRound4Timer() {
+            if (round4Timer) {
+                clearInterval(round4Timer);
+                round4Timer = null;
+            }
+            round4Time = 90;
+            updateRound4Display();
+            const btn = document.getElementById('round4-start-btn');
+            if (btn) btn.textContent = 'Start';
+        }
+
+        function stopRound4Timer() {
+            if (round4Timer) {
+                clearInterval(round4Timer);
+                round4Timer = null;
+            }
+        }
+
+        function toggleRound3View() {
+            const videoElement = document.getElementById('round3-video');
+            const problemsList = document.getElementById('problems-list');
+            const timerContainer = document.querySelector('.big-timer');
+            
+            if (videoElement.style.display === 'none') {
+                videoElement.style.display = 'block';
+                problemsList.style.display = 'none';
+                timerContainer.classList.add('small');
+            } else {
+                videoElement.style.display = 'none';
+                problemsList.style.display = 'block';
+                timerContainer.classList.remove('small');
+            }
+        }
+
+        function showAllRound3Answers() {
+            round3Problems.forEach((_, i) => {
+                document.getElementById(`problem-answer-${i}`).classList.add('visible');
+            });
+        }
+
+        // ==================== ROUND 4 ====================
+        function showRound4Questions() {
+            showPage('round4-questions');
+            renderRound4Grids();
+        }
+
+        function renderRound4Grids() {
+            const grid1 = document.getElementById('round4-grid-set1');
+            const grid2 = document.getElementById('round4-grid-set2');
+            
+            grid1.innerHTML = '';
+            grid2.innerHTML = '';
+            
+            for (let i = 1; i <= 6; i++) {
+                const btn1 = document.createElement('button');
+                btn1.className = 'number-btn';
+                btn1.style.background = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+                if (round4UsedSet1.has(i)) {
+                    btn1.classList.add('used');
+                }
+                btn1.textContent = i;
+                btn1.onclick = () => selectRound4Question(1, i);
+                grid1.appendChild(btn1);
+                
+                const btn2 = document.createElement('button');
+                btn2.className = 'number-btn';
+                btn2.style.background = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+                if (round4UsedSet2.has(i)) {
+                    btn2.classList.add('used');
+                }
+                btn2.textContent = i;
+                btn2.onclick = () => selectRound4Question(2, i);
+                grid2.appendChild(btn2);
+            }
+        }
+
+        function selectRound4Question(setNum, num) {
+            if (setNum === 1) {
+                round4UsedSet1.add(num);
+                renderRound4Grids();
+                const question = round4QuestionsSet1[num - 1];
+                openQuestionModal(num, question.q, null, question.answer, 10);
+            } else {
+                round4UsedSet2.add(num);
+                renderRound4Grids();
+                const question = round4QuestionsSet2[num - 1];
+                openQuestionModal(num, question.q, null, question.answer, 10);
+            }
+        }
+
+        // ==================== MODAL ====================
+        function openQuestionModal(num, questionText, options, answer, time, imageUrl) {
+            document.getElementById('modal-question-number').textContent = `Question ${num}`;
+            document.getElementById('modal-question-text').textContent = questionText;
+            document.getElementById('modal-answer-text').textContent = answer;
+            document.getElementById('modal-answer-box').classList.remove('visible');
+            
+            const questionImage = document.getElementById('modal-question-image');
+            if (imageUrl) {
+                questionImage.src = imageUrl;
+                questionImage.classList.add('visible');
+            } else {
+                questionImage.src = '';
+                questionImage.classList.remove('visible');
+            }
+            
+            const optionsList = document.getElementById('modal-options');
+            if (options && options.length > 0) {
+                optionsList.innerHTML = options.map(o => `<li>${o}</li>`).join('');
+                optionsList.style.display = 'block';
+            } else {
+                optionsList.style.display = 'none';
+            }
+            
+            document.getElementById('question-modal').classList.add('active');
+            startModalTimer(time);
+        }
+
+        function startModalTimer(time) {
+            stopAllTimers();
+            const timerEl = document.getElementById('modal-timer');
+            timerEl.textContent = time;
+            timerEl.classList.remove('warning');
+            
+            currentTimer = setInterval(() => {
+                time--;
+                timerEl.textContent = time;
+                if (time <= 3) timerEl.classList.add('warning');
+                if (time <= 0) {
+                    clearInterval(currentTimer);
+                    timerEl.textContent = "Time's up!";
+                }
+            }, 1000);
+        }
+
+        function revealAnswer() {
+            document.getElementById('modal-answer-box').classList.add('visible');
+        }
+
+        function closeModal() {
+            stopAllTimers();
+            document.getElementById('question-modal').classList.remove('active');
+        }
+
+        // ==================== UTILITIES ====================
+        function stopAllTimers() {
+            if (currentTimer) {
+                clearInterval(currentTimer);
+                currentTimer = null;
+            }
+            if (round3Timer) {
+                clearInterval(round3Timer);
+                round3Timer = null;
+            }
+            if (round4Timer) {
+                clearInterval(round4Timer);
+                round4Timer = null;
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
